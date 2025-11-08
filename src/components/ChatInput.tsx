@@ -23,10 +23,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     if (message.trim() && !isLoading) {
       onSendMessage(message.trim(), isImageModel)
       setMessage('')
-      // 送信後すぐにフォーカスを戻す
-      setTimeout(() => {
+      // 送信後すぐにフォーカスを戻す（遅延なし）
+      requestAnimationFrame(() => {
         textareaRef.current?.focus()
-      }, 0)
+      })
     }
   }
 

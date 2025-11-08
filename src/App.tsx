@@ -65,14 +65,13 @@ function App() {
 
   // メッセージが変更されたら会話サービスに保存
   useEffect(() => {
-    if (currentConversation) {
-      // 会話サービスのメッセージを更新
-      const allConversations = conversationService.getAllConversations()
-      const targetIndex = allConversations.findIndex(c => c.id === currentConversation.id)
-      if (targetIndex !== -1) {
-        allConversations[targetIndex].messages = messages
-        allConversations[targetIndex].updatedAt = Date.now()
-      }
+    if (currentConversation && messages.length > 0) {
+      // conversationServiceを使って正しく保存
+      conversationService.saveConversation({
+        ...currentConversation,
+        messages: messages,
+        updatedAt: Date.now()
+      })
     }
   }, [messages, currentConversation])
 

@@ -71,6 +71,15 @@ export class ConversationService {
     return null
   }
 
+  // 会話を保存（更新）
+  saveConversation(updatedConversation: Conversation): void {
+    const index = this.conversations.findIndex(c => c.id === updatedConversation.id)
+    if (index !== -1) {
+      this.conversations[index] = updatedConversation
+      this.saveConversations()
+    }
+  }
+
   // メッセージを追加
   addMessage(message: Message): void {
     const conversation = this.getCurrentConversation()
