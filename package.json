@@ -41,9 +41,13 @@
     "appId": "com.raspi.gemini-chat",
     "productName": "Gemini Chat",
     "linux": {
-      "target": ["AppImage", "deb"],
-      "category": "Utility",
-      "arch": ["arm64"]
+      "target": [
+        {
+          "target": "dir",
+          "arch": ["arm64"]
+        }
+      ],
+      "category": "Utility"
     },
     "files": [
       "dist/**/*",
