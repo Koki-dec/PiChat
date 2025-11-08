@@ -13,13 +13,20 @@ export default {
         'screen-custom': '1920px',
       },
       colors: {
-        'gemini': {
-          'blue': '#1a73e8',
-          'light-blue': '#4285f4',
-          'dark': '#202124',
-          'gray': '#5f6368',
-          'light-gray': '#e8eaed',
-          'surface': '#f8f9fa',
+        'primary': {
+          DEFAULT: '#0066CC',
+          dark: '#0052A3',
+          light: '#3385D6',
+        },
+        'surface': {
+          DEFAULT: '#FFFFFF',
+          secondary: '#F5F5F5',
+          border: '#E5E5E5',
+        },
+        'text': {
+          primary: '#1A1A1A',
+          secondary: '#666666',
+          tertiary: '#999999',
         }
       }
     },
