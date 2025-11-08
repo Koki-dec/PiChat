@@ -18,9 +18,17 @@ echo "Environment:" >> "$LOG_FILE"
 env >> "$LOG_FILE" 2>&1
 
 # パスの確認
-APP_PATH="$HOME/ai-chat/release/linux-arm64-unpacked/raspi-gemini-chat"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    APP_PATH="$HOME/ai-chat/release/mac-arm64/Gemini Chat.app/Contents/MacOS/Gemini Chat"
+else
+    # Linux
+    APP_PATH="$HOME/ai-chat/release/linux-arm64-unpacked/raspi-gemini-chat"
+fi
+
 echo "" >> "$LOG_FILE"
 echo "Checking app path: $APP_PATH" >> "$LOG_FILE"
+echo "OS: $OSTYPE" >> "$LOG_FILE"
 
 if [ -f "$APP_PATH" ]; then
     echo "✓ App file exists" >> "$LOG_FILE"
@@ -37,6 +45,17 @@ if [ -z "$DISPLAY" ]; then
     echo "✗ DISPLAY not set, setting to :0" >> "$LOG_FILE"
     export DISPLAY=:0
 fi
+
+# Gitリポジトリを更新
+echo "" >> "$LOG_FILE"
+echo "Updating git repository..." >> "$LOG_FILE"
+cd "$HOME/ai-chat"
+git pull origin main >> "$LOG_FILE" 2>&1
+
+# アプリを再ビルド（必要な場合）
+echo "" >> "$LOG_FILE"
+echo "Rebuilding application..." >> "$LOG_FILE"
+npm run build >> "$LOG_FILE" 2>&1
 
 # 実行
 echo "" >> "$LOG_FILE"

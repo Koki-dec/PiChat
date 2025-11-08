@@ -18,9 +18,18 @@ echo -e "${NC}"
 # カレントディレクトリを取得
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 APP_DIR="$(dirname "$SCRIPT_DIR")"
-APP_EXEC="$APP_DIR/release/linux-arm64-unpacked/raspi-gemini-chat"
+
+# プラットフォームに応じて実行ファイルパスを設定
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    APP_EXEC="$APP_DIR/release/mac-arm64/Gemini Chat.app/Contents/MacOS/Gemini Chat"
+else
+    # Linux
+    APP_EXEC="$APP_DIR/release/linux-arm64-unpacked/raspi-gemini-chat"
+fi
 
 echo "アプリケーションパス: $APP_EXEC"
+echo "OS: $OSTYPE"
 
 # 実行ファイルの存在確認
 if [ ! -f "$APP_EXEC" ]; then

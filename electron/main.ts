@@ -11,7 +11,7 @@ const createWindow = () => {
   mainWindow = new BrowserWindow({
     width: 1920,
     height: 515,
-    frame: false, // フレームレスウィンドウ（全画面表示用）
+    frame: true, // フレームを有効化してバツボタンを表示
     resizable: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
