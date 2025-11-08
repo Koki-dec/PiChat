@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Send, Loader2, ImagePlus } from 'lucide-react'
+import { Send, Loader2, Sparkles } from 'lucide-react'
 import type { ModelType } from '../types'
 
 interface ChatInputProps {
@@ -41,7 +41,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto'
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 60)}px`
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 80)}px`
     }
   }, [message])
 
@@ -51,19 +51,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   }, [])
 
   return (
-    <div className="h-[60px] bg-gemini-dark border-t border-gray-700 px-4 flex items-center">
-      <form onSubmit={handleSubmit} className="w-full flex items-center gap-3">
+    <div className="border-t border-surface-border bg-surface px-6 py-4">
+      <form onSubmit={handleSubmit} className="w-full flex items-end gap-3">
         {/* モデル表示 */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          {isImageModel ? (
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-pink-600/20 border border-pink-600/50 rounded-md">
-              <ImagePlus className="w-4 h-4 text-pink-400" />
-              <span className="text-xs text-pink-300 font-medium">Image</span>
-            </div>
-          ) : (
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-          )}
-        </div>
+        {isImageModel && (
+          <div className="flex items-center gap-1.5 px-2 py-1 bg-primary-light/10 border border-primary-light rounded text-xs text-primary mb-2">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span className="font-medium">Image</span>
+          </div>
+        )}
 
         {/* 入力欄 */}
         <div className="flex-1 relative">
@@ -78,9 +74,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 : 'メッセージを入力... (Shift+Enterで改行)'
             }
             disabled={isLoading}
-            className="w-full bg-gray-800 text-gray-200 rounded-lg px-4 py-2 resize-none outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            className="w-full bg-surface-secondary text-text-primary border border-surface-border rounded-lg px-4 py-3 resize-none outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             rows={1}
-            style={{ maxHeight: '60px' }}
+            style={{ maxHeight: '80px' }}
           />
         </div>
 
@@ -88,7 +84,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         <button
           type="submit"
           disabled={!message.trim() || isLoading}
-          className="flex-shrink-0 w-10 h-10 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-colors"
+          className="flex-shrink-0 w-11 h-11 bg-primary hover:bg-primary-dark disabled:bg-surface-border disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-colors mb-0.5"
         >
           {isLoading ? (
             <Loader2 className="w-5 h-5 text-white animate-spin" />

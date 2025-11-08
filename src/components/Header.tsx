@@ -7,12 +7,12 @@ interface HeaderProps {
   onSettingsClick: () => void
 }
 
-const MODELS: { value: ModelType; label: string; color: string }[] = [
-  { value: 'gemini-2.0-flash-exp', label: 'Gemini 2.0 Flash', color: 'bg-purple-600' },
-  { value: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro', color: 'bg-blue-600' },
-  { value: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash', color: 'bg-green-600' },
-  { value: 'gemini-1.5-flash-8b-latest', label: 'Gemini 1.5 Flash-8B', color: 'bg-teal-600' },
-  { value: 'imagen-3.0-generate-001', label: 'Imagen 3', color: 'bg-pink-600' },
+const MODELS: { value: ModelType; label: string }[] = [
+  { value: 'gemini-2.0-flash-exp', label: '2.0 Flash' },
+  { value: 'gemini-1.5-pro-latest', label: '1.5 Pro' },
+  { value: 'gemini-1.5-flash-latest', label: '1.5 Flash' },
+  { value: 'gemini-1.5-flash-8b-latest', label: '1.5 Flash-8B' },
+  { value: 'imagen-3.0-generate-001', label: 'Imagen 3' },
 ]
 
 export const Header: React.FC<HeaderProps> = ({
@@ -25,14 +25,14 @@ export const Header: React.FC<HeaderProps> = ({
   }
 
   return (
-    <header className="h-[60px] bg-gradient-to-r from-gemini-dark to-gray-900 border-b border-gray-700 flex items-center justify-between px-4">
+    <header className="h-[60px] bg-surface border-b border-surface-border flex items-center justify-between px-6">
       {/* 左側：ロゴとモデル選択 */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">G</span>
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
+            <span className="text-white font-semibold text-sm">G</span>
           </div>
-          <h1 className="text-white font-semibold text-lg">Gemini Chat</h1>
+          <h1 className="text-text-primary font-semibold text-lg">Gemini Chat</h1>
         </div>
 
         {/* モデル選択 */}
@@ -41,10 +41,10 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               key={model.value}
               onClick={() => onModelChange(model.value)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
                 selectedModel === model.value
-                  ? `${model.color} text-white shadow-lg scale-105`
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'bg-primary text-white'
+                  : 'bg-surface-secondary text-text-secondary hover:bg-surface-border'
               }`}
             >
               {model.label}
@@ -57,17 +57,17 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="flex items-center gap-2">
         <button
           onClick={onSettingsClick}
-          className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+          className="p-2 hover:bg-surface-secondary rounded transition-colors"
           title="設定"
         >
-          <Settings className="w-5 h-5 text-gray-300" />
+          <Settings className="w-5 h-5 text-text-secondary" />
         </button>
         <button
           onClick={handleQuit}
-          className="p-2 hover:bg-red-600 rounded-lg transition-colors"
+          className="p-2 hover:bg-red-50 rounded transition-colors"
           title="終了"
         >
-          <X className="w-5 h-5 text-gray-300" />
+          <X className="w-5 h-5 text-text-secondary hover:text-red-600" />
         </button>
       </div>
     </header>

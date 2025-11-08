@@ -165,7 +165,7 @@ function App() {
   }
 
   return (
-    <div className="h-screen w-screen bg-gemini-dark flex flex-col overflow-hidden">
+    <div className="h-screen w-screen bg-surface flex flex-col overflow-hidden">
       {/* ヘッダー */}
       <Header
         selectedModel={settings.selectedModel}
@@ -174,31 +174,33 @@ function App() {
       />
 
       {/* チャットエリア */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto bg-surface">
         {messages.length === 0 ? (
           <div className="h-full flex items-center justify-center">
             <div className="text-center space-y-4">
-              <div className="text-6xl">🤖</div>
-              <h2 className="text-2xl font-semibold text-gray-300">
-                Gemini Chat へようこそ
+              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto">
+                <span className="text-white text-3xl font-bold">G</span>
+              </div>
+              <h2 className="text-2xl font-semibold text-text-primary">
+                Gemini Chat
               </h2>
-              <p className="text-gray-500 max-w-md">
+              <p className="text-text-secondary max-w-md text-sm">
                 メッセージを入力して会話を始めましょう。
                 <br />
-                モデルを選択してテキスト生成や画像生成を利用できます。
+                上部のモデルを選択してテキスト生成や画像生成を利用できます。
               </p>
               {!geminiService.isConfigured() && (
                 <button
                   onClick={() => setIsSettingsOpen(true)}
-                  className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  className="mt-4 px-5 py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg transition-colors"
                 >
-                  APIキーを設定
+                  API Keyを設定
                 </button>
               )}
             </div>
           </div>
         ) : (
-          <div className="space-y-0">
+          <div>
             {messages.map((message) => (
               <ChatMessage key={message.id} message={message} />
             ))}

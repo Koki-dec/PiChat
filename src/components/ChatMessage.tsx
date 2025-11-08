@@ -1,5 +1,6 @@
 import { User, Bot, Image as ImageIcon } from 'lucide-react'
 import type { Message } from '../types'
+import { MarkdownContent } from './MarkdownContent'
 
 interface ChatMessageProps {
   message: Message
@@ -10,16 +11,16 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 
   return (
     <div
-      className={`flex gap-3 p-3 ${
-        isUser ? 'bg-transparent' : 'bg-gray-800/50'
-      } hover:bg-gray-800/70 transition-colors`}
+      className={`flex gap-4 p-6 border-b border-surface-border ${
+        isUser ? 'bg-surface-secondary' : 'bg-surface'
+      }`}
     >
       {/* アバター */}
       <div
-        className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+        className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${
           isUser
-            ? 'bg-gradient-to-br from-blue-500 to-blue-600'
-            : 'bg-gradient-to-br from-purple-500 to-pink-600'
+            ? 'bg-text-primary'
+            : 'bg-primary'
         }`}
       >
         {isUser ? (
@@ -31,16 +32,16 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 
       {/* メッセージコンテンツ */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm font-medium text-gray-300">
+        <div className="flex items-center gap-3 mb-2">
+          <span className="text-sm font-semibold text-text-primary">
             {isUser ? 'You' : 'Gemini'}
           </span>
           {message.model && (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-text-tertiary">
               {message.model}
             </span>
           )}
-          <span className="text-xs text-gray-600">
+          <span className="text-xs text-text-tertiary">
             {new Date(message.timestamp).toLocaleTimeString('ja-JP', {
               hour: '2-digit',
               minute: '2-digit',
@@ -50,25 +51,29 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 
         {/* テキストコンテンツ */}
         {message.contentType === 'text' && (
-          <div className="text-sm text-gray-200 whitespace-pre-wrap break-words">
-            {message.content}
+          <div className="text-sm text-text-primary leading-relaxed">
+            {isUser ? (
+              <p className="whitespace-pre-wrap break-words">{message.content}</p>
+            ) : (
+              <MarkdownContent content={message.content} />
+            )}
           </div>
         )}
 
         {/* 画像コンテンツ */}
         {message.contentType === 'image' && message.imageUrl && (
           <div className="mt-2">
-            <div className="inline-flex items-center gap-2 text-xs text-gray-400 mb-2">
+            <div className="inline-flex items-center gap-2 text-xs text-text-tertiary mb-2">
               <ImageIcon className="w-4 h-4" />
               <span>Generated Image</span>
             </div>
             <img
               src={message.imageUrl}
               alt="Generated"
-              className="max-w-md max-h-64 rounded-lg border border-gray-700"
+              className="max-w-md max-h-64 rounded border border-surface-border"
             />
             {message.content && (
-              <p className="text-xs text-gray-500 mt-2">Prompt: {message.content}</p>
+              <p className="text-xs text-text-tertiary mt-2">Prompt: {message.content}</p>
             )}
           </div>
         )}
