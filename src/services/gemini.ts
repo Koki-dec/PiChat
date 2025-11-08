@@ -41,13 +41,12 @@ export class GeminiService {
         generationConfig: {
           temperature: request.temperature ?? 1.0,
           maxOutputTokens: request.maxTokens ?? 8192,
-        }
-        // Google Search一時的に無効化
-        // tools: [
-        //   {
-        //     google_search: {}
-        //   }
-        // ]
+        },
+        tools: [
+          {
+            google_search: {}
+          }
+        ]
       }
 
       const response = await fetch(url, {
@@ -150,7 +149,10 @@ export class GeminiService {
 
   // ストリーミング対応
   async *generateTextStream(request: GeminiRequest): AsyncGenerator<string> {
+    console.log('generateTextStream called with:', request.model)
+
     if (!this.isConfigured()) {
+      console.error('API key not configured')
       yield 'Error: API key not configured'
       return
     }
@@ -158,27 +160,29 @@ export class GeminiService {
     try {
       // REST APIを直接使用してストリーミング生成（Google Search機能付き）
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${request.model}:streamGenerateContent?key=${this.apiKey}`
-      
+      console.log('Fetching URL:', url.replace(this.apiKey, 'HIDDEN'))
+
       // チャット履歴を構築
       const history = this.buildHistory(request.history || [])
       const contents = [
         ...history.map(h => ({ role: h.role, parts: h.parts })),
         { role: 'user', parts: [{ text: request.prompt }] }
       ]
-      
+
       const requestBody = {
         contents,
         generationConfig: {
           temperature: request.temperature ?? 1.0,
           maxOutputTokens: request.maxTokens ?? 8192,
-        }
-        // Google Search一時的に無効化
-        // tools: [
-        //   {
-        //     google_search: {}
-        //   }
-        // ]
+        },
+        tools: [
+          {
+            google_search: {}
+          }
+        ]
       }
+
+      console.log('Request body:', JSON.stringify(requestBody, null, 2))
 
       const response = await fetch(url, {
         method: 'POST',
@@ -188,24 +192,32 @@ export class GeminiService {
         body: JSON.stringify(requestBody)
       })
 
+      console.log('Response status:', response.status, response.statusText)
+
       if (!response.ok) {
         const error = await response.text()
+        console.error('API error response:', error)
         yield `Error: ${error}`
         return
       }
 
       const reader = response.body?.getReader()
       if (!reader) {
+        console.error('No response body')
         yield 'Error: No response body'
         return
       }
 
       const decoder = new TextDecoder()
       let buffer = ''
+      let chunkCount = 0
 
       while (true) {
         const { done, value } = await reader.read()
-        if (done) break
+        if (done) {
+          console.log('Stream done, total chunks:', chunkCount)
+          break
+        }
 
         buffer += decoder.decode(value, { stream: true })
         const lines = buffer.split('\n')
@@ -218,16 +230,20 @@ export class GeminiService {
             // Remove trailing comma if present
             const jsonLine = line.trim().replace(/,$/, '')
             const data = JSON.parse(jsonLine)
+            console.log('Parsed data:', data)
 
             // パーツを全て処理（Google Searchレスポンス対応）
             if (data.candidates?.[0]?.content?.parts) {
               for (const part of data.candidates[0].content.parts) {
                 if (part.text) {
+                  chunkCount++
+                  console.log('Yielding text:', part.text)
                   yield part.text
                 }
               }
             }
           } catch (e) {
+            console.error('JSON parse error:', e, 'Line:', line)
             // Skip invalid JSON lines
             continue
           }
