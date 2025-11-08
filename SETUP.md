@@ -77,7 +77,7 @@ cd ~/ai-chat
 npm run electron:dev
 
 # リリース版の場合
-./release/linux-arm64-unpacked/gemini-chat
+./release/linux-arm64-unpacked/raspi-gemini-chat
 ```
 
 起動したら：
@@ -165,10 +165,10 @@ sudo reboot
 journalctl -u gemini-chat -n 50
 
 # 実行ファイルの権限を確認
-ls -la ~/ai-chat/release/linux-arm64-unpacked/gemini-chat
+ls -la ~/ai-chat/release/linux-arm64-unpacked/raspi-gemini-chat
 
 # 手動で起動してエラーを確認
-~/ai-chat/release/linux-arm64-unpacked/gemini-chat
+~/ai-chat/release/linux-arm64-unpacked/raspi-gemini-chat
 ```
 
 ### ディスプレイサイズが合わない

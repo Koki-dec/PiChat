@@ -64,7 +64,7 @@ chmod +x setup-raspi.sh
 
 ```bash
 # アプリを起動
-./release/linux-arm64-unpacked/gemini-chat
+./release/linux-arm64-unpacked/raspi-gemini-chat
 ```
 
 または、ビルド後に自動起動を設定した場合は、Raspberry Piを再起動：
@@ -102,10 +102,10 @@ npm run electron:build
 
 ```bash
 # 実行権限を確認
-ls -la release/linux-arm64-unpacked/gemini-chat
+ls -la release/linux-arm64-unpacked/raspi-gemini-chat
 
 # 権限がない場合
-chmod +x release/linux-arm64-unpacked/gemini-chat
+chmod +x release/linux-arm64-unpacked/raspi-gemini-chat
 ```
 
 ### メモリ不足エラー

@@ -33,7 +33,7 @@ chmod +x setup-raspi.sh
 ./setup-raspi.sh
 
 # 3. アプリを起動
-./release/linux-arm64-unpacked/gemini-chat
+./release/linux-arm64-unpacked/raspi-gemini-chat
 ```
 
 詳細は [`QUICK_START.md`](./QUICK_START.md) を参照してください。
@@ -82,7 +82,7 @@ nano ~/.config/autostart/gemini-chat.desktop
 [Desktop Entry]
 Type=Application
 Name=Gemini Chat
-Exec=/path/to/ai-chat/release/linux-arm64-unpacked/gemini-chat
+Exec=/path/to/ai-chat/release/linux-arm64-unpacked/raspi-gemini-chat
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
@@ -114,7 +114,7 @@ Type=simple
 User=pi
 Environment=DISPLAY=:0
 Environment=XAUTHORITY=/home/pi/.Xauthority
-ExecStart=/path/to/ai-chat/release/linux-arm64-unpacked/gemini-chat
+ExecStart=/path/to/ai-chat/release/linux-arm64-unpacked/raspi-gemini-chat
 Restart=on-failure
 
 [Install]

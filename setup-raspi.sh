@@ -100,8 +100,8 @@ build_application() {
 set_permissions() {
     info_msg "実行権限を設定中..."
 
-    if [ -f "./release/linux-arm64-unpacked/gemini-chat" ]; then
-        chmod +x ./release/linux-arm64-unpacked/gemini-chat
+    if [ -f "./release/linux-arm64-unpacked/raspi-gemini-chat" ]; then
+        chmod +x ./release/linux-arm64-unpacked/raspi-gemini-chat
         success_msg "実行権限の設定完了"
     else
         echo -e "${YELLOW}警告: 実行ファイルが見つかりません${NC}"
@@ -131,7 +131,7 @@ suggest_test_run() {
     echo "次のステップ:"
     echo ""
     echo "1. アプリをテスト起動:"
-    echo "   ./release/linux-arm64-unpacked/gemini-chat"
+    echo "   ./release/linux-arm64-unpacked/raspi-gemini-chat"
     echo ""
     echo "2. Gemini API Keyを取得:"
     echo "   https://makersuite.google.com/app/apikey"

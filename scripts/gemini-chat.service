@@ -12,7 +12,7 @@ Environment=DISPLAY=:0
 Environment=XAUTHORITY=/home/pi/.Xauthority
 Environment=NODE_ENV=production
 WorkingDirectory=/home/pi/ai-chat
-ExecStart=/home/pi/ai-chat/release/linux-arm64-unpacked/gemini-chat
+ExecStart=/home/pi/ai-chat/release/linux-arm64-unpacked/raspi-gemini-chat
 Restart=on-failure
 RestartSec=5
 StandardOutput=journal

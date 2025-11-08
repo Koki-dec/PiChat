@@ -2,7 +2,7 @@
 Type=Application
 Name=Gemini Chat
 Comment=AI Chat Application optimized for 1920x515 display
-Exec=/home/pi/ai-chat/release/linux-arm64-unpacked/gemini-chat
+Exec=/home/pi/ai-chat/release/linux-arm64-unpacked/raspi-gemini-chat
 Icon=/home/pi/ai-chat/assets/icon.png
 Terminal=false
 Categories=Utility;Application;
