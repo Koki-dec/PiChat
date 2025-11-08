@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Gemini Chat (Auto-Update)
+Comment=AI Chat Application with auto-update on startup
+Exec=/home/pi/ai-chat/scripts/auto-update-start.sh
+Icon=/home/pi/ai-chat/assets/icon.png
+Terminal=false
+Categories=Utility;Application;
+X-GNOME-Autostart-enabled=true

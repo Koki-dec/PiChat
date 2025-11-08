@@ -16,6 +16,14 @@ APP_DIR="$(dirname "$SCRIPT_DIR")"
 echo "アプリケーションディレクトリ: $APP_DIR"
 echo ""
 
+# 自動更新の有無を選択
+echo "起動時にGitから自動更新を行いますか？"
+echo "1) はい (起動時に自動でgit pullとビルド)"
+echo "2) いいえ (通常起動)"
+echo ""
+read -p "選択 (1-2): " update_choice
+echo ""
+
 # 方法を選択
 echo "自動起動方法を選択してください:"
 echo "1) autostart (推奨)"
@@ -32,13 +40,25 @@ case $choice in
     # autostartディレクトリを作成
     mkdir -p ~/.config/autostart
 
-    # desktopファイルをコピー（パスを更新）
-    sed "s|/home/pi/ai-chat|$APP_DIR|g" "$SCRIPT_DIR/autostart.desktop" > ~/.config/autostart/gemini-chat.desktop
+    # 自動更新の選択に応じてdesktopファイルを選択
+    if [ "$update_choice" = "1" ]; then
+        # 自動更新スクリプトに実行権限を付与
+        chmod +x "$SCRIPT_DIR/auto-update-start.sh"
+
+        # 自動更新版のdesktopファイルをコピー
+        sed "s|/home/pi/ai-chat|$APP_DIR|g" "$SCRIPT_DIR/autostart-with-update.desktop" > ~/.config/autostart/gemini-chat.desktop
+
+        echo "✓ autostart設定が完了しました（自動更新有効）"
+    else
+        # 通常版のdesktopファイルをコピー
+        sed "s|/home/pi/ai-chat|$APP_DIR|g" "$SCRIPT_DIR/autostart.desktop" > ~/.config/autostart/gemini-chat.desktop
+
+        echo "✓ autostart設定が完了しました"
+    fi
 
     # 実行権限を付与
     chmod +x ~/.config/autostart/gemini-chat.desktop
 
-    echo "✓ autostart設定が完了しました"
     echo "  場所: ~/.config/autostart/gemini-chat.desktop"
     ;;
 esac
@@ -48,12 +68,29 @@ case $choice in
     echo ""
     echo "--- systemd service設定 ---"
 
-    # サービスファイルをコピー（パスとユーザーを更新）
-    sudo sed -e "s|/home/pi/ai-chat|$APP_DIR|g" \
-             -e "s|User=pi|User=$USER|g" \
-             -e "s|Group=pi|Group=$USER|g" \
-             -e "s|/home/pi/.Xauthority|$HOME/.Xauthority|g" \
-             "$SCRIPT_DIR/gemini-chat.service" > /tmp/gemini-chat.service
+    # 自動更新の選択に応じてサービスファイルを選択
+    if [ "$update_choice" = "1" ]; then
+        # 自動更新スクリプトに実行権限を付与
+        chmod +x "$SCRIPT_DIR/auto-update-start.sh"
+
+        # 自動更新版のサービスファイルをコピー
+        sudo sed -e "s|/home/pi/ai-chat|$APP_DIR|g" \
+                 -e "s|User=pi|User=$USER|g" \
+                 -e "s|Group=pi|Group=$USER|g" \
+                 -e "s|/home/pi/.Xauthority|$HOME/.Xauthority|g" \
+                 "$SCRIPT_DIR/gemini-chat-with-update.service" > /tmp/gemini-chat.service
+
+        echo "✓ systemd service設定が完了しました（自動更新有効）"
+    else
+        # 通常版のサービスファイルをコピー
+        sudo sed -e "s|/home/pi/ai-chat|$APP_DIR|g" \
+                 -e "s|User=pi|User=$USER|g" \
+                 -e "s|Group=pi|Group=$USER|g" \
+                 -e "s|/home/pi/.Xauthority|$HOME/.Xauthority|g" \
+                 "$SCRIPT_DIR/gemini-chat.service" > /tmp/gemini-chat.service
+
+        echo "✓ systemd service設定が完了しました"
+    fi
 
     sudo mv /tmp/gemini-chat.service /etc/systemd/system/gemini-chat.service
 
@@ -62,8 +99,6 @@ case $choice in
 
     # サービスを有効化
     sudo systemctl enable gemini-chat.service
-
-    echo "✓ systemd service設定が完了しました"
     echo ""
     echo "サービスコマンド:"
     echo "  起動: sudo systemctl start gemini-chat"
