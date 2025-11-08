@@ -50,6 +50,40 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     textareaRef.current?.focus()
   }, [])
 
+  // グローバルキーボードイベントでフォーカスを維持
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // 特殊キー（Ctrl, Alt, Cmd, Tab, Escなど）は無視
+      if (e.ctrlKey || e.metaKey || e.altKey || e.key === 'Tab' || e.key === 'Escape') {
+        return
+      }
+      
+      // テキストボックスにフォーカスがない場合、フォーカスを移動
+      if (document.activeElement !== textareaRef.current) {
+        textareaRef.current?.focus()
+      }
+    }
+
+    // クリックイベントでもフォーカスを戻す（送信ボタン以外）
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      // ボタンやリンクでなければフォーカスを戻す
+      if (!target.closest('button') && !target.closest('a') && !target.closest('input')) {
+        setTimeout(() => {
+          textareaRef.current?.focus()
+        }, 0)
+      }
+    }
+
+    window.addEventListener('keydown', handleGlobalKeyDown)
+    window.addEventListener('click', handleGlobalClick)
+
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown)
+      window.removeEventListener('click', handleGlobalClick)
+    }
+  }, [])
+
   return (
     <div className="border-t border-surface-border bg-surface px-6 py-4">
       <form onSubmit={handleSubmit} className="w-full flex items-end gap-3">
