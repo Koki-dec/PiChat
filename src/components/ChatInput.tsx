@@ -16,7 +16,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const [message, setMessage] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const isImageModel = selectedModel === 'imagen-3.0-generate-001'
+  const isImageModel = selectedModel === 'gemini-2.5-flash-image'
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

@@ -74,47 +74,51 @@ export class GeminiService {
     }
 
     try {
-      // Imagen 3を使用して画像生成
-      // 注意: Imagen APIは別のエンドポイントを使用する場合があります
-      // ここでは仮実装として、テキスト生成APIを使用しています
-      // 実際の実装では、Vertex AI や専用の画像生成APIを使用する必要があります
-
+      // Gemini 2.5 Flash Image を使用して画像生成
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${this.apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${this.apiKey}`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            instances: [{ prompt }],
-            parameters: {
-              sampleCount: 1,
-            }
+            contents: [{
+              parts: [{
+                text: prompt
+              }]
+            }]
           })
         }
       )
 
       if (!response.ok) {
-        // 画像生成が利用できない場合の代替処理
+        const errorData = await response.json()
         return {
-          text: `画像生成機能は現在利用できません。\n\nリクエストされたプロンプト: "${prompt}"\n\nNote: Imagen 3 APIを使用するには、Google Cloud VertexAIのセットアップが必要です。`,
-          error: 'Image generation not available with current API setup'
+          text: `画像生成機能でエラーが発生しました。\n\nプロンプト: "${prompt}"\n\nエラー: ${JSON.stringify(errorData)}`,
+          error: 'Image generation failed'
         }
       }
 
       const data = await response.json()
 
-      if (data.predictions && data.predictions[0]?.bytesBase64Encoded) {
-        const imageUrl = `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`
-        return { imageUrl }
+      // レスポンスから画像データを抽出
+      if (data.candidates && data.candidates[0]?.content?.parts) {
+        const imagePart = data.candidates[0].content.parts.find((part: any) => part.inlineData)
+        if (imagePart?.inlineData?.data) {
+          const imageUrl = `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`
+          return { imageUrl, text: prompt }
+        }
       }
 
-      return { error: 'Failed to generate image' }
+      return {
+        text: `画像生成に失敗しました。\n\nプロンプト: "${prompt}"`,
+        error: 'No image data in response'
+      }
     } catch (error) {
       console.error('Image generation error:', error)
       return {
-        text: `画像生成中にエラーが発生しました。\n\nNote: Imagen 3を使用するには追加のセットアップが必要です。現在はテキスト生成モデル（Gemini 2.0 Flash, 1.5 Pro, 1.5 Flash, 1.5 Flash-8B）のみ利用可能です。`,
+        text: `画像生成中にエラーが発生しました。\n\nプロンプト: "${prompt}"\n\nエラー: ${error instanceof Error ? error.message : '不明なエラー'}`,
         error: error instanceof Error ? error.message : 'Unknown error occurred'
       }
     }

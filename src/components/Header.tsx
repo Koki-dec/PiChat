@@ -8,11 +8,10 @@ interface HeaderProps {
 }
 
 const MODELS: { value: ModelType; label: string }[] = [
-  { value: 'gemini-2.0-flash-exp', label: '2.0 Flash' },
-  { value: 'gemini-1.5-pro-latest', label: '1.5 Pro' },
-  { value: 'gemini-1.5-flash-latest', label: '1.5 Flash' },
-  { value: 'gemini-1.5-flash-8b-latest', label: '1.5 Flash-8B' },
-  { value: 'imagen-3.0-generate-001', label: 'Imagen 3' },
+  { value: 'gemini-2.5-pro', label: '2.5 Pro' },
+  { value: 'gemini-flash-latest', label: 'Flash' },
+  { value: 'gemini-flash-lite-latest', label: 'Flash Lite' },
+  { value: 'gemini-2.5-flash-image', label: 'Image' },
 ]
 
 export const Header: React.FC<HeaderProps> = ({
