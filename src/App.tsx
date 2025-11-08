@@ -15,7 +15,7 @@ const STORAGE_KEYS = {
 
 const DEFAULT_SETTINGS: ChatSettings = {
   apiKey: '',
-  selectedModel: 'gemini-2.5-flash-latest',
+  selectedModel: 'gemini-2.5-flash',
   temperature: 1.0,
   maxTokens: 8192,
   systemPrompt: '',
@@ -40,10 +40,13 @@ function App() {
 
           // 古いモデル名を新しいものにマイグレーション
           const modelMigration: Record<string, ModelType> = {
-            'gemini-2.0-flash-exp': 'gemini-2.5-flash-latest',
+            'gemini-2.0-flash-exp': 'gemini-2.5-flash',
             'gemini-1.5-pro-latest': 'gemini-2.5-pro',
-            'gemini-1.5-flash-latest': 'gemini-2.5-flash-latest',
-            'gemini-1.5-flash-8b-latest': 'gemini-flash-lite-latest',
+            'gemini-1.5-flash-latest': 'gemini-2.5-flash',
+            'gemini-1.5-flash-8b-latest': 'gemini-2.5-flash-lite',
+            'gemini-2.5-flash-latest': 'gemini-2.5-flash',
+            'gemini-flash-latest': 'gemini-2.5-flash',
+            'gemini-flash-lite-latest': 'gemini-2.5-flash-lite',
             'imagen-3.0-generate-001': 'gemini-2.5-flash-image',
           }
 

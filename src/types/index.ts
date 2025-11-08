@@ -1,8 +1,8 @@
 // Gemini モデル定義
 export type GeminiModel =
   | 'gemini-2.5-pro'
-  | 'gemini-2.5-flash-latest'
-  | 'gemini-flash-lite-latest'
+  | 'gemini-2.5-flash'
+  | 'gemini-2.5-flash-lite'
 
 export type ImagenModel = 'gemini-2.5-flash-image'
 

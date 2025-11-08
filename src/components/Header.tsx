@@ -10,8 +10,8 @@ interface HeaderProps {
 
 const MODELS: { value: ModelType; label: string }[] = [
   { value: 'gemini-2.5-pro', label: '2.5 Pro' },
-  { value: 'gemini-2.5-flash-latest', label: 'Flash' },
-  { value: 'gemini-flash-lite-latest', label: 'Flash Lite' },
+  { value: 'gemini-2.5-flash', label: 'Flash' },
+  { value: 'gemini-2.5-flash-lite', label: 'Flash Lite' },
   { value: 'gemini-2.5-flash-image', label: 'Image' },
 ]
 

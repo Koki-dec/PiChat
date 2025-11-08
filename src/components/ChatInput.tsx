@@ -14,8 +14,8 @@ interface ChatInputProps {
 
 const MODELS: { value: ModelType; label: string; number: number }[] = [
   { value: 'gemini-2.5-pro', label: '2.5 Pro', number: 1 },
-  { value: 'gemini-2.5-flash-latest', label: 'Flash', number: 2 },
-  { value: 'gemini-flash-lite-latest', label: 'Flash Lite', number: 3 },
+  { value: 'gemini-2.5-flash', label: 'Flash', number: 2 },
+  { value: 'gemini-2.5-flash-lite', label: 'Flash Lite', number: 3 },
   { value: 'gemini-2.5-flash-image', label: 'Image', number: 4 },
 ]
 
