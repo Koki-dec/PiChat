@@ -160,7 +160,6 @@ function App() {
 
         // ストリーミングで応答を取得
         let fullText = ''
-        console.log('Starting stream with model:', settings.selectedModel)
         const stream = geminiService.generateTextStream({
           model: settings.selectedModel as any,
           prompt: content,
@@ -170,9 +169,7 @@ function App() {
           systemPrompt: settings.systemPrompt,
         })
 
-        console.log('Stream created, starting iteration')
         for await (const chunk of stream) {
-          console.log('Received chunk:', chunk)
           fullText += chunk
 
           // メッセージを更新
@@ -184,7 +181,6 @@ function App() {
             )
           )
         }
-        console.log('Stream completed, total text:', fullText)
 
         // ストリーミング完了
         setMessages((prev) =>

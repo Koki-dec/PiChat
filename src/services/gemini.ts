@@ -149,10 +149,7 @@ export class GeminiService {
 
   // ストリーミング対応
   async *generateTextStream(request: GeminiRequest): AsyncGenerator<string> {
-    console.log('generateTextStream called with:', request.model)
-
     if (!this.isConfigured()) {
-      console.error('API key not configured')
       yield 'Error: API key not configured'
       return
     }
@@ -160,7 +157,6 @@ export class GeminiService {
     try {
       // REST APIを直接使用してストリーミング生成（Google Search機能付き）
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${request.model}:streamGenerateContent?key=${this.apiKey}`
-      console.log('Fetching URL:', url.replace(this.apiKey, 'HIDDEN'))
 
       // チャット履歴を構築
       const history = this.buildHistory(request.history || [])
@@ -182,8 +178,6 @@ export class GeminiService {
         ]
       }
 
-      console.log('Request body:', JSON.stringify(requestBody, null, 2))
-
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -192,62 +186,76 @@ export class GeminiService {
         body: JSON.stringify(requestBody)
       })
 
-      console.log('Response status:', response.status, response.statusText)
-
       if (!response.ok) {
         const error = await response.text()
-        console.error('API error response:', error)
         yield `Error: ${error}`
         return
       }
 
       const reader = response.body?.getReader()
       if (!reader) {
-        console.error('No response body')
         yield 'Error: No response body'
         return
       }
 
       const decoder = new TextDecoder()
       let buffer = ''
-      let chunkCount = 0
 
       while (true) {
         const { done, value } = await reader.read()
-        if (done) {
-          console.log('Stream done, total chunks:', chunkCount)
-          break
-        }
+        if (done) break
 
         buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || ''
 
-        for (const line of lines) {
-          if (line.trim() === '' || line.trim() === '[' || line.trim() === ']') continue
+        // Split by lines and look for complete JSON objects
+        let startIndex = 0
+        while (true) {
+          // Find the start of a JSON object
+          const objStart = buffer.indexOf('{', startIndex)
+          if (objStart === -1) break
+
+          // Find the matching closing brace
+          let braceCount = 0
+          let objEnd = -1
+          for (let i = objStart; i < buffer.length; i++) {
+            if (buffer[i] === '{') braceCount++
+            else if (buffer[i] === '}') {
+              braceCount--
+              if (braceCount === 0) {
+                objEnd = i + 1
+                break
+              }
+            }
+          }
+
+          if (objEnd === -1) {
+            // Incomplete object, keep in buffer
+            break
+          }
+
+          // Extract and parse the complete JSON object
+          const jsonStr = buffer.substring(objStart, objEnd)
+          startIndex = objEnd
 
           try {
-            // Remove trailing comma if present
-            const jsonLine = line.trim().replace(/,$/, '')
-            const data = JSON.parse(jsonLine)
-            console.log('Parsed data:', data)
+            const data = JSON.parse(jsonStr)
 
             // パーツを全て処理（Google Searchレスポンス対応）
             if (data.candidates?.[0]?.content?.parts) {
               for (const part of data.candidates[0].content.parts) {
                 if (part.text) {
-                  chunkCount++
-                  console.log('Yielding text:', part.text)
                   yield part.text
                 }
               }
             }
           } catch (e) {
-            console.error('JSON parse error:', e, 'Line:', line)
-            // Skip invalid JSON lines
+            // Skip invalid JSON
             continue
           }
         }
+
+        // Remove processed data from buffer
+        buffer = buffer.substring(startIndex)
       }
     } catch (error) {
       console.error('Gemini API error:', error)
