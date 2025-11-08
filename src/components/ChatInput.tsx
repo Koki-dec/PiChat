@@ -52,6 +52,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   // グローバルキーボードイベントでフォーカスを維持
   useEffect(() => {
+    let focusTimeout: NodeJS.Timeout | null = null
+
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       // IME使用中は何もしない（日本語入力を妨げない）
       if (e.isComposing) {
@@ -63,16 +65,42 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         return
       }
       
-      // 入力可能な文字キーの場合、フォーカスを移動
-      // 矢印キーやファンクションキーは除外
+      // 既にフォーカスがある場合は何もしない
+      if (document.activeElement === textareaRef.current) {
+        return
+      }
+      
+      // 入力可能な文字キーの場合、少し遅延させてフォーカスを移動
+      // これによりIMEが最初の文字を正しく処理できる
       const isInputKey = e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Delete'
       
-      if (isInputKey && document.activeElement !== textareaRef.current) {
-        textareaRef.current?.focus()
+      if (isInputKey) {
+        // 既存のタイムアウトをクリア
+        if (focusTimeout) {
+          clearTimeout(focusTimeout)
+        }
+        
+        // 50ms遅延させてフォーカス（IMEが起動する時間を確保）
+        focusTimeout = setTimeout(() => {
+          if (document.activeElement !== textareaRef.current) {
+            textareaRef.current?.focus()
+          }
+        }, 50)
       }
     }
 
-    // クリックイベントでもフォーカスを戻す（送信ボタン以外）
+    window.addEventListener('keydown', handleGlobalKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown)
+      if (focusTimeout) {
+        clearTimeout(focusTimeout)
+      }
+    }
+  }, [])
+
+  // クリックイベントでもフォーカスを戻す
+  useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement
       // ボタンやリンクでなければフォーカスを戻す
@@ -83,11 +111,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       }
     }
 
-    window.addEventListener('keydown', handleGlobalKeyDown)
     window.addEventListener('click', handleGlobalClick)
 
     return () => {
-      window.removeEventListener('keydown', handleGlobalKeyDown)
       window.removeEventListener('click', handleGlobalClick)
     }
   }, [])
