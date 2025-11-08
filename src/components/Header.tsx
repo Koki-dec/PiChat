@@ -32,7 +32,8 @@ export const Header: React.FC<HeaderProps> = ({
         {/* メニューボタン */}
         <button
           onClick={onMenuClick}
-          className="p-2 hover:bg-surface-secondary rounded-lg transition-colors lg:hidden"
+          className="p-2 hover:bg-surface-secondary rounded-lg transition-colors"
+          title="会話一覧"
         >
           <Menu className="w-5 h-5 text-text-secondary" />
         </button>
