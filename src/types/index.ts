@@ -15,6 +15,17 @@ export type Role = 'user' | 'assistant' | 'system'
 // メッセージコンテンツのタイプ
 export type ContentType = 'text' | 'image'
 
+// ファイル添付の型
+export interface Attachment {
+  id: string
+  type: 'image' | 'video' | 'audio' | 'document'
+  name: string
+  mimeType: string
+  data: string // base64 encoded data
+  url?: string // for Google Drive files
+  size: number
+}
+
 // メッセージ定義
 export interface Message {
   id: string
@@ -24,6 +35,8 @@ export interface Message {
   imageUrl?: string
   timestamp: number
   model?: ModelType
+  attachments?: Attachment[]
+  isStreaming?: boolean
 }
 
 // チャット設定
@@ -43,6 +56,7 @@ export interface GeminiRequest {
   temperature?: number
   maxTokens?: number
   systemPrompt?: string
+  attachments?: Attachment[]
 }
 
 // APIレスポンス
