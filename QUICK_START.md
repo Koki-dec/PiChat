@@ -30,7 +30,7 @@ node --version  # v20.x.x が表示されればOK
 cd ~
 
 # リポジトリをクローン
-git clone <YOUR_REPOSITORY_URL> ai-chat
+git clone https://github.com/Koki-dec/PiChat.git ai-chat
 
 # プロジェクトディレクトリに移動
 cd ai-chat

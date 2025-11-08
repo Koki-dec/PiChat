@@ -25,7 +25,7 @@ Raspberry Piで5分でセットアップする方法：
 ```bash
 # 1. リポジトリをクローン
 cd ~
-git clone <YOUR_REPOSITORY_URL> ai-chat
+git clone https://github.com/Koki-dec/PiChat.git ai-chat
 cd ai-chat
 
 # 2. セットアップスクリプトを実行
