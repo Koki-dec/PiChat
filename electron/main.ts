@@ -13,6 +13,7 @@ const createWindow = () => {
     height: 515,
     frame: true, // フレームを有効化してバツボタンを表示
     resizable: false,
+    fullscreen: true, // 起動時に全画面
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -20,6 +21,9 @@ const createWindow = () => {
       sandbox: false
     }
   })
+
+  // 全画面モードを強制
+  mainWindow.setFullScreen(true)
 
   // 開発環境の場合
   if (process.env.NODE_ENV === 'development' || !app.isPackaged) {
