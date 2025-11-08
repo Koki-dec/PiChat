@@ -37,6 +37,20 @@ function App() {
         const savedSettings = localStorage.getItem(STORAGE_KEYS.SETTINGS)
         if (savedSettings) {
           const parsed = JSON.parse(savedSettings)
+
+          // 古いモデル名を新しいものにマイグレーション
+          const modelMigration: Record<string, ModelType> = {
+            'gemini-2.0-flash-exp': 'gemini-2.5-flash-latest',
+            'gemini-1.5-pro-latest': 'gemini-2.5-pro',
+            'gemini-1.5-flash-latest': 'gemini-2.5-flash-latest',
+            'gemini-1.5-flash-8b-latest': 'gemini-flash-lite-latest',
+            'imagen-3.0-generate-001': 'gemini-2.5-flash-image',
+          }
+
+          if (parsed.selectedModel && modelMigration[parsed.selectedModel]) {
+            parsed.selectedModel = modelMigration[parsed.selectedModel]
+          }
+
           setSettings(parsed)
 
           // APIキーが保存されていればGeminiServiceに設定

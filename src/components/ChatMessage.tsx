@@ -1,6 +1,7 @@
-import { User, Bot, Image as ImageIcon } from 'lucide-react'
+import { User, Image as ImageIcon } from 'lucide-react'
 import type { Message } from '../types'
 import { MarkdownContent } from './MarkdownContent'
+import { GeminiIcon } from './GeminiIcon'
 
 interface ChatMessageProps {
   message: Message
@@ -20,13 +21,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${
           isUser
             ? 'bg-text-primary'
-            : 'bg-primary'
+            : 'bg-white border-2 border-surface-border'
         }`}
       >
         {isUser ? (
           <User className="w-5 h-5 text-white" />
         ) : (
-          <Bot className="w-5 h-5 text-white" />
+          <GeminiIcon className="w-6 h-6" />
         )}
       </div>
 

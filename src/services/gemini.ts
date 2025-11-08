@@ -211,14 +211,19 @@ export class GeminiService {
 
         for (const line of lines) {
           if (line.trim() === '' || line.trim() === '[' || line.trim() === ']') continue
-          
+
           try {
             // Remove trailing comma if present
             const jsonLine = line.trim().replace(/,$/, '')
             const data = JSON.parse(jsonLine)
-            
-            if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
-              yield data.candidates[0].content.parts[0].text
+
+            // パーツを全て処理（Google Searchレスポンス対応）
+            if (data.candidates?.[0]?.content?.parts) {
+              for (const part of data.candidates[0].content.parts) {
+                if (part.text) {
+                  yield part.text
+                }
+              }
             }
           } catch (e) {
             // Skip invalid JSON lines
