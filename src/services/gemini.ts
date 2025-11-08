@@ -26,40 +26,51 @@ export class GeminiService {
     }
 
     try {
-      const model = this.genAI!.getGenerativeModel({
-        model: request.model as string,
-        generationConfig: {
-          temperature: request.temperature ?? 1.0,
-          maxOutputTokens: request.maxTokens ?? 8192,
-        }
-      })
+      // REST APIを直接使用（Google Search機能付き）
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${request.model}:generateContent?key=${this.apiKey}`
 
       // チャット履歴を構築
       const history = this.buildHistory(request.history || [])
+      const contents = [
+        ...history.map(h => ({ role: h.role, parts: h.parts })),
+        { role: 'user', parts: [{ text: request.prompt }] }
+      ]
 
-      if (history.length > 0) {
-        // チャット形式
-        const chat = model.startChat({
-          history,
-          generationConfig: {
-            temperature: request.temperature ?? 1.0,
-            maxOutputTokens: request.maxTokens ?? 8192,
+      const requestBody = {
+        contents,
+        generationConfig: {
+          temperature: request.temperature ?? 1.0,
+          maxOutputTokens: request.maxTokens ?? 8192,
+        },
+        tools: [
+          {
+            google_search: {}
           }
-        })
-
-        const result = await chat.sendMessage(request.prompt)
-        const response = await result.response
-        const text = response.text()
-
-        return { text }
-      } else {
-        // 単発生成
-        const result = await model.generateContent(request.prompt)
-        const response = await result.response
-        const text = response.text()
-
-        return { text }
+        ]
       }
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        return {
+          error: errorData.error?.message || 'API request failed'
+        }
+      }
+
+      const data = await response.json()
+
+      if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        return { text: data.candidates[0].content.parts[0].text }
+      }
+
+      return { error: 'No response from API' }
     } catch (error) {
       console.error('Gemini API error:', error)
       return {
@@ -144,7 +155,7 @@ export class GeminiService {
     }
 
     try {
-      // REST APIを直接使用してGoogle Search機能を有効化
+      // REST APIを直接使用してストリーミング生成（Google Search機能付き）
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${request.model}:streamGenerateContent?key=${this.apiKey}`
       
       // チャット履歴を構築
@@ -160,14 +171,11 @@ export class GeminiService {
           temperature: request.temperature ?? 1.0,
           maxOutputTokens: request.maxTokens ?? 8192,
         },
-        tools: [{
-          google_search_retrieval: {
-            dynamic_retrieval_config: {
-              mode: 'MODE_DYNAMIC',
-              dynamic_threshold: 0.3
-            }
+        tools: [
+          {
+            google_search: {}
           }
-        }]
+        ]
       }
 
       const response = await fetch(url, {
