@@ -92,7 +92,7 @@ function App() {
       id: Date.now().toString(),
       role: 'user',
       content,
-      contentType: isImageGeneration ? 'image' : 'text',
+      contentType: 'text', // ユーザーメッセージは常にtext
       timestamp: Date.now(),
       model: settings.selectedModel,
     }
