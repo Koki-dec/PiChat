@@ -38,9 +38,6 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
         
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-            <span className="text-white font-semibold text-sm">G</span>
-          </div>
           <h1 className="text-text-primary font-semibold text-lg">Gemini Chat</h1>
         </div>
 

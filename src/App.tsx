@@ -251,9 +251,6 @@ function App() {
         {messages.length === 0 ? (
           <div className="h-full flex items-center justify-center">
             <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto">
-                <span className="text-white text-3xl font-bold">G</span>
-              </div>
               <h2 className="text-2xl font-semibold text-text-primary">
                 Gemini Chat
               </h2>

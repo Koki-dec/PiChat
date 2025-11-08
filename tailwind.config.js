@@ -20,13 +20,13 @@ export default {
         },
         'surface': {
           DEFAULT: '#FFFFFF',
-          secondary: '#F5F5F5',
-          border: '#E5E5E5',
+          secondary: '#F8F9FA',
+          border: '#D1D5DB', // はっきりしたグレー
         },
         'text': {
-          primary: '#1A1A1A',
-          secondary: '#666666',
-          tertiary: '#999999',
+          primary: '#111827', // はっきりした黒
+          secondary: '#4B5563', // はっきりしたグレー
+          tertiary: '#6B7280', // はっきりしたグレー
         }
       }
     },

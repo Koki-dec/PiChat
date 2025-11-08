@@ -18,8 +18,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   const isImageModel = selectedModel === 'gemini-2.5-flash-image'
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
     if (message.trim() && !isLoading) {
       onSendMessage(message.trim(), isImageModel)
       setMessage('')
@@ -33,7 +33,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      handleSubmit(e)
+      handleSubmit()
     }
   }
 
