@@ -63,8 +63,11 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         return
       }
       
-      // テキストボックスにフォーカスがない場合、フォーカスを移動
-      if (document.activeElement !== textareaRef.current) {
+      // 入力可能な文字キーの場合、フォーカスを移動
+      // 矢印キーやファンクションキーは除外
+      const isInputKey = e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Delete'
+      
+      if (isInputKey && document.activeElement !== textareaRef.current) {
         textareaRef.current?.focus()
       }
     }
