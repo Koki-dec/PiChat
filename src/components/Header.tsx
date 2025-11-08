@@ -1,4 +1,4 @@
-import { Settings, Minimize2, X } from 'lucide-react'
+import { Settings, X } from 'lucide-react'
 import type { ModelType } from '../types'
 
 interface HeaderProps {
@@ -20,10 +20,6 @@ export const Header: React.FC<HeaderProps> = ({
   onModelChange,
   onSettingsClick,
 }) => {
-  const handleMinimize = () => {
-    window.electron?.minimize()
-  }
-
   const handleQuit = () => {
     window.electron?.quit()
   }
@@ -65,13 +61,6 @@ export const Header: React.FC<HeaderProps> = ({
           title="設定"
         >
           <Settings className="w-5 h-5 text-gray-300" />
-        </button>
-        <button
-          onClick={handleMinimize}
-          className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-          title="最小化"
-        >
-          <Minimize2 className="w-5 h-5 text-gray-300" />
         </button>
         <button
           onClick={handleQuit}

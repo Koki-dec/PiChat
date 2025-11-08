@@ -23,6 +23,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     if (message.trim() && !isLoading) {
       onSendMessage(message.trim(), isImageModel)
       setMessage('')
+      // 送信後すぐにフォーカスを戻す
+      setTimeout(() => {
+        textareaRef.current?.focus()
+      }, 0)
     }
   }
 
@@ -33,12 +37,18 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     }
   }
 
+  // テキストエリアの高さ自動調整
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto'
       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 60)}px`
     }
   }, [message])
+
+  // 初回マウント時にフォーカス
+  useEffect(() => {
+    textareaRef.current?.focus()
+  }, [])
 
   return (
     <div className="h-[60px] bg-gemini-dark border-t border-gray-700 px-4 flex items-center">
