@@ -46,17 +46,6 @@ if [ -z "$DISPLAY" ]; then
     export DISPLAY=:0
 fi
 
-# Gitリポジトリを更新
-echo "" >> "$LOG_FILE"
-echo "Updating git repository..." >> "$LOG_FILE"
-cd "$HOME/ai-chat"
-git pull origin main >> "$LOG_FILE" 2>&1
-
-# アプリを再ビルド（必要な場合）
-echo "" >> "$LOG_FILE"
-echo "Rebuilding application..." >> "$LOG_FILE"
-npm run build >> "$LOG_FILE" 2>&1
-
 # 実行
 echo "" >> "$LOG_FILE"
 echo "Starting application..." >> "$LOG_FILE"
