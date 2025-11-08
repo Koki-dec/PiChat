@@ -18,7 +18,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     >
       {/* アバター */}
       <div
-        className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${
+        className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden ${
           isUser
             ? 'bg-text-primary'
             : 'bg-white border-2 border-surface-border'
@@ -27,7 +27,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         {isUser ? (
           <User className="w-5 h-5 text-white" />
         ) : (
-          <GeminiIcon className="w-6 h-6" />
+          <GeminiIcon className="w-full h-full object-cover" />
         )}
       </div>
 
