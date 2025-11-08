@@ -1,4 +1,3 @@
-import React from 'react'
 import { Settings, Minimize2, X } from 'lucide-react'
 import type { ModelType } from '../types'
 

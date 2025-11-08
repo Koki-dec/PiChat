@@ -1,4 +1,3 @@
-import React from 'react'
 import { User, Bot, Image as ImageIcon } from 'lucide-react'
 import type { Message } from '../types'
 

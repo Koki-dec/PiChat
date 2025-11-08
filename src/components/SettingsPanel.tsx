@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Save, Key, Trash2 } from 'lucide-react'
 import type { ChatSettings } from '../types'
 

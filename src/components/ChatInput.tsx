@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Send, Loader2, ImagePlus } from 'lucide-react'
 import type { ModelType } from '../types'
 

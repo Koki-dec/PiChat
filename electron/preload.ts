@@ -10,15 +10,3 @@ contextBridge.exposeInMainWorld('electron', {
   getEnv: (key: string) => ipcRenderer.invoke('get-env', key),
   setEnv: (key: string, value: string) => ipcRenderer.invoke('set-env', key, value),
 })
-
-// 型定義をグローバルに追加
-declare global {
-  interface Window {
-    electron: {
-      quit: () => void
-      minimize: () => void
-      getEnv: (key: string) => Promise<string | undefined>
-      setEnv: (key: string, value: string) => Promise<boolean>
-    }
-  }
-}
