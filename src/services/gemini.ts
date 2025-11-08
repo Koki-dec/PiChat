@@ -41,12 +41,13 @@ export class GeminiService {
         generationConfig: {
           temperature: request.temperature ?? 1.0,
           maxOutputTokens: request.maxTokens ?? 8192,
-        },
-        tools: [
-          {
-            google_search: {}
-          }
-        ]
+        }
+        // Google Search一時的に無効化
+        // tools: [
+        //   {
+        //     google_search: {}
+        //   }
+        // ]
       }
 
       const response = await fetch(url, {
@@ -170,12 +171,13 @@ export class GeminiService {
         generationConfig: {
           temperature: request.temperature ?? 1.0,
           maxOutputTokens: request.maxTokens ?? 8192,
-        },
-        tools: [
-          {
-            google_search: {}
-          }
-        ]
+        }
+        // Google Search一時的に無効化
+        // tools: [
+        //   {
+        //     google_search: {}
+        //   }
+        // ]
       }
 
       const response = await fetch(url, {
