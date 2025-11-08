@@ -3,8 +3,10 @@ import { Header } from './components/Header'
 import { ChatMessage } from './components/ChatMessage'
 import { ChatInput } from './components/ChatInput'
 import { SettingsPanel } from './components/SettingsPanel'
+import { ConversationSidebar } from './components/ConversationSidebar'
 import { geminiService } from './services/gemini'
-import type { Message, ChatSettings, ModelType } from './types'
+import { conversationService } from './services/conversation'
+import type { Message, ChatSettings, ModelType, Conversation } from './types'
 
 const STORAGE_KEYS = {
   MESSAGES: 'gemini-chat-messages',
@@ -24,9 +26,11 @@ function App() {
   const [settings, setSettings] = useState<ChatSettings>(DEFAULT_SETTINGS)
   const [isLoading, setIsLoading] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // LocalStorageから設定とメッセージを読み込み
+  // 初期化と会話読み込み
   useEffect(() => {
     const loadSettings = async () => {
       try {
@@ -41,9 +45,15 @@ function App() {
           }
         }
 
-        const savedMessages = localStorage.getItem(STORAGE_KEYS.MESSAGES)
-        if (savedMessages) {
-          setMessages(JSON.parse(savedMessages))
+        // 現在の会話を読み込み
+        const current = conversationService.getCurrentConversation()
+        if (current) {
+          setCurrentConversation(current)
+          setMessages(current.messages)
+        } else {
+          // 会話がない場合は新規作成
+          const newConversation = conversationService.createConversation(settings)
+          setCurrentConversation(newConversation)
         }
       } catch (error) {
         console.error('Failed to load data from localStorage:', error)
@@ -53,12 +63,18 @@ function App() {
     loadSettings()
   }, [])
 
-  // メッセージが変更されたらLocalStorageに保存
+  // メッセージが変更されたら会話サービスに保存
   useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages))
+    if (currentConversation) {
+      // 会話サービスのメッセージを更新
+      const allConversations = conversationService.getAllConversations()
+      const targetIndex = allConversations.findIndex(c => c.id === currentConversation.id)
+      if (targetIndex !== -1) {
+        allConversations[targetIndex].messages = messages
+        allConversations[targetIndex].updatedAt = Date.now()
+      }
     }
-  }, [messages])
+  }, [messages, currentConversation])
 
   // 自動スクロール
   useEffect(() => {
@@ -82,6 +98,8 @@ function App() {
       model: settings.selectedModel,
     }
 
+    // 会話サービスにメッセージを追加
+    conversationService.addMessage(userMessage)
     setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
 
@@ -100,6 +118,8 @@ function App() {
           model: settings.selectedModel,
         }
 
+        // 会話サービスにメッセージを追加
+        conversationService.addMessage(assistantMessage)
         setMessages((prev) => [...prev, assistantMessage])
       } else {
         // テキスト生成（ストリーミング対応）
@@ -116,6 +136,8 @@ function App() {
           isStreaming: true,
         }
 
+        // 会話サービスにメッセージを追加
+        conversationService.addMessage(assistantMessage)
         setMessages((prev) => [...prev, assistantMessage])
 
         // ストリーミングで応答を取得
@@ -143,6 +165,7 @@ function App() {
         }
 
         // ストリーミング完了
+        conversationService.updateMessage(assistantMessageId, { isStreaming: false })
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === assistantMessageId
@@ -163,6 +186,8 @@ function App() {
         model: settings.selectedModel,
       }
 
+      // 会話サービスにメッセージを追加
+      conversationService.addMessage(errorMessage)
       setMessages((prev) => [...prev, errorMessage])
     } finally {
       setIsLoading(false)
@@ -180,22 +205,46 @@ function App() {
   }
 
   const handleClearHistory = () => {
+    conversationService.clearCurrentConversation()
     setMessages([])
-    localStorage.removeItem(STORAGE_KEYS.MESSAGES)
   }
 
   const handleModelChange = (model: ModelType) => {
     setSettings((prev) => ({ ...prev, selectedModel: model }))
   }
 
+  const handleNewChat = () => {
+    const newConversation = conversationService.createConversation(settings)
+    setCurrentConversation(newConversation)
+    setMessages([])
+  }
+
+  const handleSelectConversation = (conversation: Conversation) => {
+    conversationService.switchConversation(conversation.id)
+    setCurrentConversation(conversation)
+    setMessages(conversation.messages)
+  }
+
   return (
-    <div className="h-screen w-screen bg-surface flex flex-col overflow-hidden">
-      {/* ヘッダー */}
-      <Header
-        selectedModel={settings.selectedModel}
-        onModelChange={handleModelChange}
-        onSettingsClick={() => setIsSettingsOpen(true)}
+    <div className="h-screen w-screen bg-surface flex overflow-hidden">
+      {/* サイドバー */}
+      <ConversationSidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onConversationSelect={handleSelectConversation}
+        currentConversationId={currentConversation?.id || null}
+        onNewChat={handleNewChat}
       />
+
+      {/* メインコンテンツ */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* ヘッダー */}
+        <Header
+          selectedModel={settings.selectedModel}
+          onModelChange={handleModelChange}
+          onSettingsClick={() => setIsSettingsOpen(true)}
+          onMenuClick={() => setIsSidebarOpen(true)}
+        />
 
       {/* チャットエリア */}
       <div className="flex-1 overflow-y-auto bg-surface">
@@ -248,6 +297,7 @@ function App() {
         onSave={handleSaveSettings}
         onClearHistory={handleClearHistory}
       />
+      </div>
     </div>
   )
 }

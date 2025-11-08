@@ -64,3 +64,13 @@ export interface GeminiResponse {
   imageUrl?: string
   error?: string
 }
+
+// 会話の定義
+export interface Conversation {
+  id: string
+  title: string
+  messages: Message[]
+  createdAt: number
+  updatedAt: number
+  settings: ChatSettings
+}
