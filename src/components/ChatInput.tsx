@@ -126,8 +126,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 ? '画像生成のプロンプトを入力...'
                 : 'メッセージを入力... (Shift+Enterで改行)'
             }
-            disabled={isLoading}
-            className="w-full bg-surface-secondary text-text-primary border border-surface-border rounded-lg px-4 py-3 resize-none outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            className="w-full bg-surface-secondary text-text-primary border border-surface-border rounded-lg px-4 py-3 resize-none outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm"
             rows={1}
             style={{ maxHeight: '80px' }}
           />
