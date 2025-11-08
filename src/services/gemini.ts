@@ -144,45 +144,83 @@ export class GeminiService {
     }
 
     try {
-      const model = this.genAI!.getGenerativeModel({
-        model: request.model as string,
+      // REST APIを直接使用してGoogle Search機能を有効化
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${request.model}:streamGenerateContent?key=${this.apiKey}`
+      
+      // チャット履歴を構築
+      const history = this.buildHistory(request.history || [])
+      const contents = [
+        ...history.map(h => ({ role: h.role, parts: h.parts })),
+        { role: 'user', parts: [{ text: request.prompt }] }
+      ]
+      
+      const requestBody = {
+        contents,
         generationConfig: {
           temperature: request.temperature ?? 1.0,
           maxOutputTokens: request.maxTokens ?? 8192,
-        }
+        },
+        tools: [{
+          google_search_retrieval: {
+            dynamic_retrieval_config: {
+              mode: 'MODE_DYNAMIC',
+              dynamic_threshold: 0.3
+            }
+          }
+        }]
+      }
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
       })
 
-      // チャット履歴を構築
-      const history = this.buildHistory(request.history || [])
+      if (!response.ok) {
+        const error = await response.text()
+        yield `Error: ${error}`
+        return
+      }
 
-      if (history.length > 0) {
-        // チャット形式でストリーミング
-        const chat = model.startChat({
-          history,
-          generationConfig: {
-            temperature: request.temperature ?? 1.0,
-            maxOutputTokens: request.maxTokens ?? 8192,
+      const reader = response.body?.getReader()
+      if (!reader) {
+        yield 'Error: No response body'
+        return
+      }
+
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+          if (line.trim() === '' || line.trim() === '[' || line.trim() === ']') continue
+          
+          try {
+            // Remove trailing comma if present
+            const jsonLine = line.trim().replace(/,$/, '')
+            const data = JSON.parse(jsonLine)
+            
+            if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+              yield data.candidates[0].content.parts[0].text
+            }
+          } catch (e) {
+            // Skip invalid JSON lines
+            continue
           }
-        })
-
-        const result = await chat.sendMessageStream(request.prompt)
-
-        for await (const chunk of result.stream) {
-          const chunkText = chunk.text()
-          yield chunkText
-        }
-      } else {
-        // 単発生成でストリーミング
-        const result = await model.generateContentStream(request.prompt)
-
-        for await (const chunk of result.stream) {
-          const chunkText = chunk.text()
-          yield chunkText
         }
       }
     } catch (error) {
-      console.error('Gemini streaming error:', error)
-      yield `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      console.error('Gemini API error:', error)
+      yield `Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`
     }
   }
 }
