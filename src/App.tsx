@@ -15,7 +15,7 @@ const STORAGE_KEYS = {
 
 const DEFAULT_SETTINGS: ChatSettings = {
   apiKey: '',
-  selectedModel: 'gemini-flash-latest',
+  selectedModel: 'gemini-2.5-flash-latest',
   temperature: 1.0,
   maxTokens: 8192,
   systemPrompt: '',
