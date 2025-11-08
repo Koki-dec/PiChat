@@ -1,0 +1,26 @@
+[Unit]
+Description=Gemini Chat Application
+Documentation=https://github.com/yourusername/gemini-chat
+After=graphical.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/pi/.Xauthority
+Environment=NODE_ENV=production
+WorkingDirectory=/home/pi/ai-chat
+ExecStart=/home/pi/ai-chat/release/linux-arm64-unpacked/gemini-chat
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# セキュリティ設定
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=graphical.target
