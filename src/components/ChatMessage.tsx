@@ -55,7 +55,12 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             {isUser ? (
               <p className="whitespace-pre-wrap break-words">{message.content}</p>
             ) : (
-              <MarkdownContent content={message.content} />
+              <>
+                <MarkdownContent content={message.content} />
+                {message.isStreaming && (
+                  <span className="inline-block w-2 h-4 bg-primary ml-1 animate-pulse" />
+                )}
+              </>
             )}
           </div>
         )}

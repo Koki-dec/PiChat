@@ -87,7 +87,7 @@ function App() {
 
     try {
       if (isImageGeneration) {
-        // 画像生成
+        // 画像生成（ストリーミングなし）
         const response = await geminiService.generateImage(content)
 
         const assistantMessage: Message = {
@@ -102,8 +102,25 @@ function App() {
 
         setMessages((prev) => [...prev, assistantMessage])
       } else {
-        // テキスト生成
-        const response = await geminiService.generateText({
+        // テキスト生成（ストリーミング対応）
+        const assistantMessageId = (Date.now() + 1).toString()
+
+        // 空のアシスタントメッセージを作成
+        const assistantMessage: Message = {
+          id: assistantMessageId,
+          role: 'assistant',
+          content: '',
+          contentType: 'text',
+          timestamp: Date.now(),
+          model: settings.selectedModel,
+          isStreaming: true,
+        }
+
+        setMessages((prev) => [...prev, assistantMessage])
+
+        // ストリーミングで応答を取得
+        let fullText = ''
+        const stream = geminiService.generateTextStream({
           model: settings.selectedModel as any,
           prompt: content,
           history: messages,
@@ -112,20 +129,27 @@ function App() {
           systemPrompt: settings.systemPrompt,
         })
 
-        if (response.error) {
-          throw new Error(response.error)
+        for await (const chunk of stream) {
+          fullText += chunk
+
+          // メッセージを更新
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMessageId
+                ? { ...msg, content: fullText }
+                : msg
+            )
+          )
         }
 
-        const assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: response.text || 'エラーが発生しました。',
-          contentType: 'text',
-          timestamp: Date.now(),
-          model: settings.selectedModel,
-        }
-
-        setMessages((prev) => [...prev, assistantMessage])
+        // ストリーミング完了
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMessageId
+              ? { ...msg, isStreaming: false }
+              : msg
+          )
+        )
       }
     } catch (error) {
       console.error('Error sending message:', error)

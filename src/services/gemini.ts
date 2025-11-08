@@ -136,7 +136,7 @@ export class GeminiService {
     }))
   }
 
-  // ストリーミング対応（オプション）
+  // ストリーミング対応
   async *generateTextStream(request: GeminiRequest): AsyncGenerator<string> {
     if (!this.isConfigured()) {
       yield 'Error: API key not configured'
@@ -145,14 +145,40 @@ export class GeminiService {
 
     try {
       const model = this.genAI!.getGenerativeModel({
-        model: request.model as string
+        model: request.model as string,
+        generationConfig: {
+          temperature: request.temperature ?? 1.0,
+          maxOutputTokens: request.maxTokens ?? 8192,
+        }
       })
 
-      const result = await model.generateContentStream(request.prompt)
+      // チャット履歴を構築
+      const history = this.buildHistory(request.history || [])
 
-      for await (const chunk of result.stream) {
-        const chunkText = chunk.text()
-        yield chunkText
+      if (history.length > 0) {
+        // チャット形式でストリーミング
+        const chat = model.startChat({
+          history,
+          generationConfig: {
+            temperature: request.temperature ?? 1.0,
+            maxOutputTokens: request.maxTokens ?? 8192,
+          }
+        })
+
+        const result = await chat.sendMessageStream(request.prompt)
+
+        for await (const chunk of result.stream) {
+          const chunkText = chunk.text()
+          yield chunkText
+        }
+      } else {
+        // 単発生成でストリーミング
+        const result = await model.generateContentStream(request.prompt)
+
+        for await (const chunk of result.stream) {
+          const chunkText = chunk.text()
+          yield chunkText
+        }
       }
     } catch (error) {
       console.error('Gemini streaming error:', error)
