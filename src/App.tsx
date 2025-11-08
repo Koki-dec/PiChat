@@ -279,6 +279,9 @@ function App() {
         isLoading={isLoading}
         selectedModel={settings.selectedModel}
         onModelChange={handleModelChange}
+        onNewChat={handleNewChat}
+        onClearHistory={handleClearHistory}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
       {/* 設定パネル */}
