@@ -278,6 +278,7 @@ function App() {
         onSendMessage={handleSendMessage}
         isLoading={isLoading}
         selectedModel={settings.selectedModel}
+        onModelChange={handleModelChange}
       />
 
       {/* 設定パネル */}

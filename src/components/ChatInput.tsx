@@ -6,14 +6,24 @@ interface ChatInputProps {
   onSendMessage: (message: string, isImageGeneration: boolean) => void
   isLoading: boolean
   selectedModel: ModelType
+  onModelChange: (model: ModelType) => void
 }
+
+const MODELS: { value: ModelType; label: string; number: number }[] = [
+  { value: 'gemini-2.5-pro', label: '2.5 Pro', number: 1 },
+  { value: 'gemini-flash-latest', label: 'Flash', number: 2 },
+  { value: 'gemini-flash-lite-latest', label: 'Flash Lite', number: 3 },
+  { value: 'gemini-2.5-flash-image', label: 'Image', number: 4 },
+]
 
 export const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   isLoading,
   selectedModel,
+  onModelChange,
 }) => {
   const [message, setMessage] = useState('')
+  const [showModelSelector, setShowModelSelector] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const isImageModel = selectedModel === 'gemini-2.5-flash-image'
@@ -21,6 +31,25 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault()
     if (message.trim() && !isLoading) {
+      // コマンド処理
+      if (message.trim() === '/model') {
+        setShowModelSelector(true)
+        setMessage('')
+        return
+      }
+      
+      // モデル選択コマンド（/model 1-4）
+      const modelMatch = message.trim().match(/^\/model\s+(\d)$/)
+      if (modelMatch) {
+        const modelNumber = parseInt(modelMatch[1])
+        const model = MODELS.find(m => m.number === modelNumber)
+        if (model) {
+          onModelChange(model.value)
+          setMessage('')
+          return
+        }
+      }
+      
       onSendMessage(message.trim(), isImageModel)
       setMessage('')
       // 送信後すぐにフォーカスを戻す（遅延なし）
@@ -105,6 +134,37 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <div className="border-t border-surface-border bg-surface px-6 py-4">
+      {/* モデル選択UI */}
+      {showModelSelector && (
+        <div className="mb-3 p-3 bg-surface-secondary border border-surface-border rounded-lg">
+          <div className="text-sm font-medium text-text-primary mb-2">モデルを選択:</div>
+          <div className="grid grid-cols-2 gap-2">
+            {MODELS.map((model) => (
+              <button
+                key={model.value}
+                onClick={() => {
+                  onModelChange(model.value)
+                  setShowModelSelector(false)
+                }}
+                className={`p-2 rounded text-sm font-medium transition-colors ${
+                  selectedModel === model.value
+                    ? 'bg-primary text-white'
+                    : 'bg-surface hover:bg-surface-border text-text-primary'
+                }`}
+              >
+                {model.number}. {model.label}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => setShowModelSelector(false)}
+            className="mt-2 text-xs text-text-tertiary hover:text-text-secondary"
+          >
+            キャンセル
+          </button>
+        </div>
+      )}
+      
       <form onSubmit={handleSubmit} className="w-full flex items-end gap-3">
         {/* モデル表示 */}
         {isImageModel && (
