@@ -98,8 +98,7 @@ function App() {
       model: settings.selectedModel,
     }
 
-    // 会話サービスにメッセージを追加
-    conversationService.addMessage(userMessage)
+    // メッセージを追加（useEffectで自動保存される）
     setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
 
@@ -118,8 +117,7 @@ function App() {
           model: settings.selectedModel,
         }
 
-        // 会話サービスにメッセージを追加
-        conversationService.addMessage(assistantMessage)
+        // メッセージを追加（useEffectで自動保存される）
         setMessages((prev) => [...prev, assistantMessage])
       } else {
         // テキスト生成（ストリーミング対応）
@@ -136,8 +134,7 @@ function App() {
           isStreaming: true,
         }
 
-        // 会話サービスにメッセージを追加
-        conversationService.addMessage(assistantMessage)
+        // メッセージを追加（useEffectで自動保存される）
         setMessages((prev) => [...prev, assistantMessage])
 
         // ストリーミングで応答を取得
@@ -165,7 +162,6 @@ function App() {
         }
 
         // ストリーミング完了
-        conversationService.updateMessage(assistantMessageId, { isStreaming: false })
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === assistantMessageId
@@ -186,8 +182,7 @@ function App() {
         model: settings.selectedModel,
       }
 
-      // 会話サービスにメッセージを追加
-      conversationService.addMessage(errorMessage)
+      // メッセージを追加（useEffectで自動保存される）
       setMessages((prev) => [...prev, errorMessage])
     } finally {
       setIsLoading(false)
