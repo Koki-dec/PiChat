@@ -49,7 +49,12 @@ function App() {
         const current = conversationService.getCurrentConversation()
         if (current) {
           setCurrentConversation(current)
-          setMessages(current.messages)
+          // isStreamingフラグをクリアして読み込み（再生成を防ぐ）
+          const cleanedMessages = current.messages.map(msg => ({
+            ...msg,
+            isStreaming: false
+          }))
+          setMessages(cleanedMessages)
         } else {
           // 会話がない場合は新規作成
           const newConversation = conversationService.createConversation(settings)
