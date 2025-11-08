@@ -31,7 +31,11 @@ export class GeminiService {
         generationConfig: {
           temperature: request.temperature ?? 1.0,
           maxOutputTokens: request.maxTokens ?? 8192,
-        }
+        },
+        // Google Search Groundingを有効化
+        tools: [{
+          googleSearchRetrieval: {}
+        }]
       })
 
       // チャット履歴を構築
@@ -149,7 +153,11 @@ export class GeminiService {
         generationConfig: {
           temperature: request.temperature ?? 1.0,
           maxOutputTokens: request.maxTokens ?? 8192,
-        }
+        },
+        // Google Search Groundingを有効化
+        tools: [{
+          googleSearchRetrieval: {}
+        }]
       })
 
       // チャット履歴を構築
