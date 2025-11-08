@@ -53,8 +53,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   // グローバルキーボードイベントでフォーカスを維持
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // 特殊キー（Ctrl, Alt, Cmd, Tab, Escなど）は無視
-      if (e.ctrlKey || e.metaKey || e.altKey || e.key === 'Tab' || e.key === 'Escape') {
+      // 左Alt（AltLeft）で英語入力、右Alt（AltRight）で日本語入力
+      // Altキー単体の場合は入力モード切り替えのみ
+      if (e.code === 'AltLeft' || e.code === 'AltRight') {
+        // Altキーは入力モード切り替えに使うので、フォーカス処理をスキップ
+        return
+      }
+      
+      // 特殊キー（Ctrl, Cmd, Tab, Escなど）は無視
+      if (e.ctrlKey || e.metaKey || e.key === 'Tab' || e.key === 'Escape') {
         return
       }
       

@@ -15,7 +15,14 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => 
     <div className="markdown-content prose prose-sm max-w-none">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[rehypeKatex]}
+        rehypePlugins={[
+          [rehypeKatex, {
+            strict: false,
+            trust: true,
+            throwOnError: false,
+            output: 'html'
+          }]
+        ]}
         components={{
           code({ node, inline, className, children, ...props }: any) {
             const match = /language-(\w+)/.exec(className || '')
