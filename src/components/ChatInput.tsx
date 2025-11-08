@@ -32,7 +32,10 @@ const SLASH_COMMANDS: SlashCommand[] = [
   { command: '/clear', description: '現在の会話をクリア', category: '会話管理' },
   
   // モデル選択
-  { command: '/model', description: 'モデル選択UIを表示', category: 'モデル', usage: '/model または /model [1-4]' },
+  { command: '/model 1', description: '2.5 Pro - 最高性能モデル', category: 'モデル' },
+  { command: '/model 2', description: 'Flash - バランス型（デフォルト）', category: 'モデル' },
+  { command: '/model 3', description: 'Flash Lite - 高速軽量', category: 'モデル' },
+  { command: '/model 4', description: 'Image - 画像生成', category: 'モデル' },
   
   // 設定
   { command: '/settings', description: '設定パネルを開く', category: '設定' },
@@ -57,7 +60,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onOpenSettings,
 }) => {
   const [message, setMessage] = useState('')
-  const [showModelSelector, setShowModelSelector] = useState(false)
   const [showCommandSuggestions, setShowCommandSuggestions] = useState(false)
   const [filteredCommands, setFilteredCommands] = useState<SlashCommand[]>([])
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -67,10 +69,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const handleCommand = (cmd: string): boolean => {
     const trimmed = cmd.trim()
     
-    // /model コマンド
+    // /model コマンド（数字なしの場合はヘルプ表示）
     if (trimmed === '/model') {
-      setShowModelSelector(true)
-      return true
+      // 数字入力を促すメッセージ（実際には候補が表示されるので不要）
+      return false // コマンドとして処理せず、入力を続行
     }
     const modelMatch = trimmed.match(/^\/model\s+(\d)$/)
     if (modelMatch) {
@@ -197,7 +199,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         cmd.description.toLowerCase().includes(query)
       )
       setFilteredCommands(filtered)
-      setShowCommandSuggestions(filtered.length > 0 && message !== '/')
+      // /だけの場合も候補を表示
+      setShowCommandSuggestions(filtered.length > 0)
     } else {
       setShowCommandSuggestions(false)
     }
@@ -286,37 +289,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               </button>
             ))}
           </div>
-        </div>
-      )}
-      
-      {/* モデル選択UI */}
-      {showModelSelector && (
-        <div className="mb-3 p-3 bg-surface-secondary border border-surface-border rounded-lg">
-          <div className="text-sm font-medium text-text-primary mb-2">モデルを選択:</div>
-          <div className="grid grid-cols-2 gap-2">
-            {MODELS.map((model) => (
-              <button
-                key={model.value}
-                onClick={() => {
-                  onModelChange(model.value)
-                  setShowModelSelector(false)
-                }}
-                className={`p-2 rounded text-sm font-medium transition-colors ${
-                  selectedModel === model.value
-                    ? 'bg-primary text-white'
-                    : 'bg-surface hover:bg-surface-border text-text-primary'
-                }`}
-              >
-                {model.number}. {model.label}
-              </button>
-            ))}
-          </div>
-          <button
-            onClick={() => setShowModelSelector(false)}
-            className="mt-2 text-xs text-text-tertiary hover:text-text-secondary"
-          >
-            キャンセル
-          </button>
         </div>
       )}
       
